@@ -97,26 +97,20 @@ function sle_read_sucuri_logs()
     $sucuri_logs = file_get_contents(ABSPATH . 'wp-content/uploads/sucuri/sucuri-auditqueue.php');
     //remove first 6 lines
     $sucuri_logs = explode("?>\n", $sucuri_logs)[1];
-
     //explode string into array by each line
     $sucuri_logs = explode("\n", $sucuri_logs);
-    //invert array
+    //invert array if set
     if(isset($_GET['invert'])) {
         $sucuri_logs = array_reverse($sucuri_logs);
     }
-    array_shift($sucuri_logs);
-    //dd($sucuri_logs);
-    foreach ($sucuri_logs as $key => $value) {
-        //  dd($value); 
+    foreach ($sucuri_logs as $value) {
+        if (empty($value)) {
+            continue;
+        }
         $split_value = explode(':"', $value);
-        //dd($split_value);
         $sucuri_time = $split_value[0];
-        //dd($sucuri_time);
         list($timestamp, $microseconds) = explode('_', $sucuri_time);
-        //dd($timestamp);
         $datetime_gmt = gmdate('Y-m-d H:i:s', $timestamp) . '.' . $microseconds;
-
-        echo $datetime_gmt . ' - ' . substr($split_value[1], 0, -2) . '<br>';
+        echo $datetime_gmt . ' - ' . substr($split_value[1], 0, -1) . '<br>';
     }
-    //  echo $sucuri_logs;
 }
